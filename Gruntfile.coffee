@@ -6,7 +6,7 @@ module.exports = (grunt)=>
         jshint:
             options:
                 jshintrc: '.jshintrc'
-            all: ['p.js']
+            all: ['p.js', 'test/*_test.js']
         nodeunit:
             test: ['test/*_test.js']
 
