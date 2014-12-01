@@ -1,6 +1,6 @@
 ##P.js
 
-[![De vDependency status][david-dm-dev-image]][david-dm-dev-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Built with Grunt][grunt-image]][grunt-url]
+[![Build Status][travis-image]][travis-url] [![Build status][appveyor-image]][appveyor-url] [![De vDependency status][david-dm-dev-image]][david-dm-dev-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Built with Grunt][grunt-image]][grunt-url]
 
 <a href="https://promisesaplus.com/">
     <img src="https://promisesaplus.com/assets/logo-small.png" alt="Promises/A+ logo"
@@ -24,6 +24,10 @@ Simple _Promise/A+_ implementation for ES5.
 ##license
  MIT
  
+[travis-url]: https://travis-ci.org/yanni4night/P.js
+[travis-image]: http://img.shields.io/travis/yanni4night/P.js.svg
+[appveyor-image]:https://ci.appveyor.com/api/projects/status/bsu9w9ar8pboc2nj?svg=true
+[appveyor-url]:https://ci.appveyor.com/project/yanni4night/P.js
 [david-dm-dev-url]:https://david-dm.org/yanni4night/P.js#info=devDependencies
 [david-dm-dev-image]:https://david-dm.org/yanni4night/P.js/dev-status.svg
 [coveralls-url]:https://coveralls.io/r/yanni4night/P.js
