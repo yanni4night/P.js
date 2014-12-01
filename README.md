@@ -11,11 +11,11 @@ Simple _Promise/A+_ implementation for ES5.
 
 ##API
 
-####then
-####catch
-####P.resolve
-####P.all
-####P.race
+ - [then](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
+ - [catch](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
+ - [P.resolve](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve)
+ - [P.all](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+ - [P.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race)
 
 
 ##author
@@ -24,7 +24,7 @@ Simple _Promise/A+_ implementation for ES5.
 ##license
  MIT
  
-[npm-url]: https://npmjs.org/package/P.js
+[npm-url]: https://npmjs.org/package/p.js
 [downloads-image]: http://img.shields.io/npm/dm/p.js.svg
 [npm-image]: http://img.shields.io/npm/v/p.js.svg
 [travis-url]: https://travis-ci.org/yanni4night/P.js
