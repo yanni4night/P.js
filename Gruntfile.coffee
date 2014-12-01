@@ -9,6 +9,9 @@ module.exports = (grunt)=>
             all: ['p.js', 'test/*_test.js']
         nodeunit:
             test: ['test/*_test.js']
+        coveralls:
+            all:
+                src: 'coverage/lcov.info'
 
     grunt.registerTask 'test', ['nodeunit']
     grunt.registerTask 'default', ['jshint', 'test']
