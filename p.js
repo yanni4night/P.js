@@ -1,108 +1,126 @@
 /**
  * Copyright (C) 2014 yanni4night.com
- * q.js
+ * p.js
  *
  * changelog
  * 2014-11-30[16:05:07]:revised
+ * 2014-12-01[10:57:13]:better invoke
  *
  * @author yanni4night@gmail.com
- * @version 0.1.0
+ * @version 0.1.1
  * @since 0.1.0
  */
 
 (function(global, factory) {
     "use strict";
     if ('undefined' !== typeof define && define.amd) {
-        define('P', [], factory);
+        define(factory);
     } else if ('undefined' !== typeof module && module.exports) {
         module.exports = factory();
     } else {
         global.P = factory();
     }
-
 })(this, function() {
     "use strict";
-    var P = function(func) {
-        var state = this.state = 'pending';
-        this.resolvers = [];
-        this.rejecters = [];
-        var value = undefined;
+    var noop = function(args) {
+        return args;
+    }
+    var UNDEF = undefined;
+    var STRUNDEF = typeof undef;
+    var STRFUNC = typeof noop;
+    var STATE_PENDING = 'pending';
+    var STATE_FULFILLED = 'fulfilled';
+    var STATE_REJECTED = 'rejected';
 
-        var trigger = function(resolved) {
-            var ret, resolver, rejector;
-            if (resolved && 'resolved' === this.state) {
-                while (resolver = this.resolvers.shift()) {
-                    resolver(value);
-                }
-            } else if (!resolved && 'rejected' === this.state) {
-                while (rejector = this.rejecters.shift()) {
-                    rejector(value);
+    var P = function(func) {
+        this.state = STATE_PENDING;
+        var fns = [];
+        var value = UNDEF;
+        /**
+         * Trigger events
+         * @since 0.1.0
+         */
+        var trigger = function() {
+            var ret, fn;
+
+            while (fn = fns.shift()) {
+                if (STATE_FULFILLED === this.state) {
+                    ret = (fn.onFulfilled) ? fn.onFulfilled.call(null, value) : UNDEF;
+                    if (fn.resolve) {
+                        fn.resolve(ret);
+                    }
+                } else if (STATE_REJECTED === this.state) {
+                    ret = fn.onRejected ? fn.onRejected.call(null, value) : UNDEF;
+                    if (fn.reject) {
+                        fn.reject(ret);
+                    }
                 }
             }
+
         }.bind(this);
 
+        /**
+         * Change state to fulfilled.
+         *
+         * @param  {Mixin} data
+         * @since 0.1.0
+         */
         var resolve = function(data) {
             value = data;
-
-            if ('pending' === this.state) {
-                this.state = 'resolved';
+            if (STATE_PENDING === this.state) {
+                this.state = STATE_FULFILLED;
             }
-
-            trigger(true);
+            trigger();
         }.bind(this);
 
+        /**
+         * Change state to rejected.
+         *
+         * @param  {Mixin} reason
+         * @since 0.1.0
+         */
         var reject = function(reason) {
             value = reason;
-            if ('pending' === this.state) {
-                this.state = 'rejected';
+            if (STATE_PENDING === this.state) {
+                this.state = STATE_REJECTED;
             }
-            trigger(false);
+            trigger();
         }.bind(this);
         /**
-         * [then description]
-         * @param  {[type]} onFulfilled [description]
-         * @param  {[type]} onRejected  [description]
-         * @return {[type]}             [description]
+         *
+         * @param  {Function} onFulfilled
+         * @param  {Function} onRejected
+         * @return {Promise}
          */
         this.then = function(onFulfilled, onRejected) {
-            var ret, done, self = this,
-                t2resolve;
-            if ('function' === typeof onFulfilled) {
-                this.resolvers.push(function() {
-                    ret = onFulfilled(value);
-                    done = true;
-                    t2resolve && t2resolve(ret);
-                });
-                trigger(true);
-            }
-
-            this.catch(onRejected);
-
+            var self = this;
             return new P(function(resolve, reject) {
-                if (done) resolve(true);
-                else {
-                    t2resolve = resolve;
+                fns.push({
+                    onFulfilled: onFulfilled || noop,
+                    onRejected: onRejected || noop,
+                    resolve: resolve || noop,
+                    reject: resolve || noop
+                });
+                if (STATE_PENDING !== self.state) {
+                    trigger();
                 }
             });
         };
         /**
-         * [catch description]
-         * @param  {[type]} onRejected [description]
-         * @return {[type]}            [description]
+         * @param  {Function} onRejected
+         * @return {Promise}
          */
         this.catch = function(onRejected) {
-            var ret, done, t2reject;
-            this.rejecters.push(function() {
-                ret = onRejected(value);
-                done = true;
-                t2reject && t2reject(ret);
-            });
-            trigger(false);
-
-            return new P(function(resolve) {
-                if (done) resolve(ret);
-                else {
-                    t2reject = resolve;
+            var self = this;
+            return new P(function(resolve, reject) {
+                fns.push({
+                    onFulfilled: noop,
+                    onRejected: onRejected || noop,
+                    resolve: resolve || noop,
+                    reject: resolve || noop
+                });
+                if (STATE_PENDING !== self.state) {
+                    trigger();
                 }
             });
         };
@@ -111,7 +129,13 @@
             func(resolve, reject);
         });
     };
-
+    /**
+     * Resolve an object to a Promise object.
+     *
+     * @param  {Mixin} obj
+     * @return {Promise}
+     * @since 0.1.0
+     */
     P.resolve = function(obj) {
         if (obj instanceof P) {
             return obj;
@@ -122,6 +146,11 @@
         }
     };
 
+    /**
+     * @param  {Array} sequence
+     * @return {Promise}
+     * @since 0.1.0
+     */
     P.race = function(sequence) {
         var qs = Array.prototype.map.call(sequence, P.resolve, P);
         return new P(function(resolve, reject) {
@@ -134,7 +163,11 @@
             }
         });
     };
-
+    /**
+     * @param  {Array} sequence
+     * @return {Promise}
+     * @since 0.1.0
+     */
     P.all = function(sequence) {
         var qs = Array.prototype.map.call(sequence, P.resolve, P);
         return new P(function(resolve, reject) {
