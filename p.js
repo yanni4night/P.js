@@ -12,8 +12,8 @@
  */
 
 (function(global, factory) {
-    "use strict";
-    if ('undefined' !== typeof define && define.amd) {
+    'use strict';
+    if ('undefined' !== typeof global.define && define.amd) {
         define(factory);
     } else if ('undefined' !== typeof module && module.exports) {
         module.exports = factory();
@@ -21,21 +21,31 @@
         global.P = factory();
     }
 })(this, function() {
-    "use strict";
+    'use strict';
     var noop = function(args) {
         return args;
-    }
-    var UNDEF = undefined;
-    var STRUNDEF = typeof undef;
+    };
+
     var STRFUNC = typeof noop;
     var STATE_PENDING = 'pending';
     var STATE_FULFILLED = 'fulfilled';
     var STATE_REJECTED = 'rejected';
 
+    var isFunction = function(obj) {
+        return STRFUNC === typeof obj;
+    };
+
+    /**
+     * Promise constructor.
+     *
+     * @param {Function} func
+     * @class
+     * @since 0.1.0
+     */
     var P = function(func) {
         this.state = STATE_PENDING;
         var fns = [];
-        var value = UNDEF;
+        var value;
         /**
          * Trigger events
          * @since 0.1.0
@@ -43,14 +53,14 @@
         var trigger = function() {
             var ret, fn;
 
-            while (fn = fns.shift()) {
+            while ((fn = fns.shift())) {
                 if (STATE_FULFILLED === this.state) {
-                    ret = (fn.onFulfilled) ? fn.onFulfilled.call(null, value) : UNDEF;
+                    ret = (fn.onFulfilled) ? fn.onFulfilled.call(null, value) : undefined;
                     if (fn.resolve) {
                         fn.resolve(ret);
                     }
                 } else if (STATE_REJECTED === this.state) {
-                    ret = fn.onRejected ? fn.onRejected.call(null, value) : UNDEF;
+                    ret = fn.onRejected ? fn.onRejected.call(null, value) : undefined;
                     if (fn.reject) {
                         fn.reject(ret);
                     }
@@ -94,12 +104,12 @@
          */
         this.then = function(onFulfilled, onRejected) {
             var self = this;
-            return new P(function(resolve, reject) {
+            return new P(function(resolve) {
                 fns.push({
-                    onFulfilled: onFulfilled || noop,
-                    onRejected: onRejected || noop,
-                    resolve: resolve || noop,
-                    reject: resolve || noop
+                    onFulfilled: isFunction(onFulfilled) ? onFulfilled : noop,
+                    onRejected: isFunction(onRejected) ? onRejected : noop,
+                    resolve: isFunction(resolve) ? resolve : noop,
+                    reject: isFunction(resolve) ? resolve : noop
                 });
                 if (STATE_PENDING !== self.state) {
                     trigger();
@@ -112,12 +122,12 @@
          */
         this.catch = function(onRejected) {
             var self = this;
-            return new P(function(resolve, reject) {
+            return new P(function(resolve) {
                 fns.push({
                     onFulfilled: noop,
-                    onRejected: onRejected || noop,
-                    resolve: resolve || noop,
-                    reject: resolve || noop
+                    onRejected: isFunction(onRejected) ? onRejected : noop,
+                    resolve: isFunction(resolve) ? resolve : noop,
+                    reject: isFunction(resolve) ? resolve : noop
                 });
                 if (STATE_PENDING !== self.state) {
                     trigger();
@@ -141,7 +151,7 @@
             return obj;
         } else {
             return new P(function(resolve) {
-                resolve(obj)
+                resolve(obj);
             });
         }
     };
@@ -157,7 +167,7 @@
             if (!qs.length) {
                 resolve();
             } else {
-                qs.forEach(function(q, idx) {
+                qs.forEach(function(q) {
                     q.then(resolve, reject);
                 });
             }
