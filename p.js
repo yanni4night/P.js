@@ -23,6 +23,7 @@
     }
 })(this, function() {
     'use strict';
+
     var noop = function(args) {
         return args;
     };
@@ -32,22 +33,40 @@
     var STATE_FULFILLED = 'fulfilled';
     var STATE_REJECTED = 'rejected';
 
+    /**
+     * @param  {Mixin}  obj
+     * @return {Boolean}
+     * @since 0.1.0
+     */
     var isFunction = function(obj) {
         return STRFUNC === typeof obj;
     };
 
+    /**
+     * @param  {Mixin}  obj
+     * @return {Boolean}
+     * @since 0.2.0
+     */
     var isArray = function(obj) {
-        return '[object Array]' === Object.prototype.toString.call(obj);
+        return Array.isArray ? Array.isArray(obj) : '[object Array]' === Object.prototype.toString.call(obj);
     };
+
     /**
      * Polyfil for Function.prototype.bind for ES3.
      *
      * @param  {Function} fn
      * @param  {Object}   thisArg
      * @return {Function}
+     * @since 0.2.0
      */
     var funcBind = function(fn, thisArg /*pre-args*/ ) {
+
+        if (Function.prototype.bind) {
+            return Function.prototype.bind.apply(fn, Array.prototype.slice.call(arguments, 1));
+        }
+
         var leadingArgs = Array.prototype.slice.call(arguments, 2);
+        
         return function() {
             for (var i = leadingArgs.length - 1; i >= 0; --i) {
                 Array.prototype.unshift.call(arguments, leadingArgs[i]);
@@ -55,6 +74,7 @@
             fn.apply(thisArg, arguments);
         };
     };
+
     /**
      * Polyfil for Array.prototype.map for ES3.
      *
@@ -62,8 +82,14 @@
      * @param  {Function} fn
      * @param  {Object}   thisArg
      * @return {Array}
+     * @since 0.2.0
      */
     var arrayMap = function(arr, fn, thisArg) {
+
+        if (Array.prototype.map) {
+            return Array.prototype.map.apply(arr, Array.prototype.slice.call(arguments, 1))
+        }
+
         var ret = [];
         for (var i = 0, len = arr.length; i < len; ++i) {
             ret.push(fn.call(thisArg, arr[i], i, arr));
@@ -71,6 +97,10 @@
         return ret;
     };
 
+    /**
+     * @type {Function}
+     * @since 0.2.0
+     */
     var asap = 'undefined' === typeof setImmediate ? setTimeout : setImmediate;
 
 
