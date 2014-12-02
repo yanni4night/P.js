@@ -36,6 +36,8 @@
         return STRFUNC === typeof obj;
     };
 
+    var asap = 'undefined' === typeof setImmediate ? setTimeout : setImmediate;
+
     /**
      * Promise constructor.
      *
@@ -140,7 +142,7 @@
             });
         };
 
-        setTimeout(function() {
+        asap(function() {
             func(resolve, reject);
         });
     };
