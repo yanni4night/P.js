@@ -9,6 +9,10 @@
 
 Simple _Promise/A+_ implementation.
 
+Node.js and all modern browsers including _IE6+_ are supported.
+
+_AMD/CMD/CommonJS_ and global exporting are supported.
+
 ##API
 
  - [then](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
@@ -18,6 +22,10 @@ Simple _Promise/A+_ implementation.
  - [P.all](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
  - [P.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race)
 
+
+##test
+
+`npm test` `karma`
 
 ##author
  - <yanni4night@gmail.com>
@@ -42,5 +50,4 @@ Simple _Promise/A+_ implementation.
 [grunt-image]: https://cdn.gruntjs.com/builtwith.png
 [bower-url]:http://badge.fury.io/bo/p-js
 [bower-image]: https://badge.fury.io/bo/p-js.svg
-
 

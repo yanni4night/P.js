@@ -17,6 +17,10 @@
     'use strict';
     if ('undefined' !== typeof define && define.amd) {
         define(factory);
+    } else if ('undefined' !== typeof define && define.cmd) {
+        define(function(require, module, exports) {
+            module.exports = factory();
+        });
     } else if ('undefined' !== typeof module && module.exports) {
         module.exports = factory();
     } else {
