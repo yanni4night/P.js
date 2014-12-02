@@ -35,9 +35,13 @@
     var isFunction = function(obj) {
         return STRFUNC === typeof obj;
     };
+
+    var isArray = function(obj) {
+        return '[object Array]' === Object.prototype.toString.call(obj);
+    };
     /**
      * Polyfil for Function.prototype.bind for ES3.
-     * 
+     *
      * @param  {Function} fn
      * @param  {Object}   thisArg
      * @return {Function}
@@ -50,6 +54,21 @@
             }
             fn.apply(thisArg, arguments);
         };
+    };
+    /**
+     * Polyfil for Array.prototype.map for ES3.
+     *
+     * @param  {Array}   arr
+     * @param  {Function} fn
+     * @param  {Object}   thisArg
+     * @return {Array}
+     */
+    var arrayMap = function(arr, fn, thisArg) {
+        var ret = [];
+        for (var i = 0, len = arr.length; i < len; ++i) {
+            ret.push(fn.call(thisArg, arr[i], i, arr));
+        }
+        return ret;
     };
 
     var asap = 'undefined' === typeof setImmediate ? setTimeout : setImmediate;
@@ -203,7 +222,7 @@
      * @since 0.1.0
      */
     P.race = function(sequence) {
-        var qs = Array.prototype.map.call(sequence, P.resolve, P);
+        var qs = arrayMap(sequence, P.resolve, P);
         return new P(function(resolve, reject) {
             if (!qs.length) {
                 resolve();
@@ -221,7 +240,7 @@
      * @since 0.1.0
      */
     P.all = function(sequence) {
-        var qs = Array.prototype.map.call(sequence, P.resolve, P);
+        var qs = arrayMap(sequence, P.resolve, P);
         return new P(function(resolve, reject) {
             var resolveCnt = 0,
                 ret = [];
