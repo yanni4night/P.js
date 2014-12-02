@@ -35,8 +35,25 @@
     var isFunction = function(obj) {
         return STRFUNC === typeof obj;
     };
+    /**
+     * Polyfil for Function.prototype.bind for ES3.
+     * 
+     * @param  {Function} fn
+     * @param  {Object}   thisArg
+     * @return {Function}
+     */
+    var funcBind = function(fn, thisArg /*pre-args*/ ) {
+        var leadingArgs = Array.prototype.slice.call(arguments, 2);
+        return function() {
+            for (var i = leadingArgs.length - 1; i >= 0; --i) {
+                Array.prototype.unshift.call(arguments, leadingArgs[i]);
+            }
+            fn.apply(thisArg, arguments);
+        };
+    };
 
     var asap = 'undefined' === typeof setImmediate ? setTimeout : setImmediate;
+
 
     /**
      * Promise constructor.
@@ -58,7 +75,7 @@
          * Trigger events
          * @since 0.1.0
          */
-        var trigger = function() {
+        var trigger = funcBind(function() {
             var fn;
 
             if (STATE_PENDING === this.state) {
@@ -74,7 +91,7 @@
                 }
             }
 
-        }.bind(this);
+        }, this);
 
         /**
          * Change state to fulfilled.
@@ -82,13 +99,13 @@
          * @param  {Mixin} data
          * @since 0.1.0
          */
-        var resolve = function(data) {
+        var resolve = funcBind(function(data) {
             value = data;
             if (STATE_PENDING === this.state) {
                 this.state = STATE_FULFILLED;
             }
             trigger();
-        }.bind(this);
+        }, this);
 
         /**
          * Change state to rejected.
@@ -96,15 +113,15 @@
          * @param  {Mixin} reason
          * @since 0.1.0
          */
-        var reject = function(reason) {
+        var reject = funcBind(function(reason) {
             value = reason;
             if (STATE_PENDING === this.state) {
                 this.state = STATE_REJECTED;
             }
             trigger();
-        }.bind(this);
+        }, this);
+
         /**
-         *
          * @param  {Function} onFulfilled
          * @param  {Function} onRejected
          * @return {Promise}
@@ -123,6 +140,7 @@
                 }
             });
         };
+
         /**
          * @param  {Function} onRejected
          * @return {Promise}
@@ -146,6 +164,7 @@
             func(resolve, reject);
         });
     };
+
     /**
      * Resolve an object to a Promise object.
      *
@@ -195,6 +214,7 @@
             }
         });
     };
+
     /**
      * @param  {Array} sequence
      * @return {Promise}
@@ -218,7 +238,7 @@
             } else {
                 qs.forEach(function(q, idx) {
                     q.then((function(idx) {
-                        return singleResolve.bind(null, idx);
+                        return funcBind(singleResolve, null, idx);
                     })(idx), reject);
                 });
             }
