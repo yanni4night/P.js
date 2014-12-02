@@ -6,7 +6,7 @@
   "authors": [
     "yinyong <yanni4night@gmail.com>"
   ],
-  "description": "Simple Promise/A+ implementation for ES5",
+  "description": "Simple Promise/A+ implementation",
   "moduleType": [
     "amd",
     "globals",

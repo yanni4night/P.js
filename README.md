@@ -7,7 +7,7 @@
          title="Promises/A+ 1.0 compliant" align="right" />
 </a>
 
-Simple _Promise/A+_ implementation for ES5.
+Simple _Promise/A+_ implementation.
 
 ##API
 
