@@ -6,6 +6,7 @@
  * 2014-11-30[16:05:07]:revised
  * 2014-12-01[10:57:13]:better invoke
  * 2014-12-02[10:17:14]:add P.reject
+ * 2014-12-02[11:13:59]:polyfil for ES3
  *
  * @author yanni4night@gmail.com
  * @version 0.1.2
@@ -47,8 +48,8 @@
      * @return {Boolean}
      * @since 0.2.0
      */
-    var isArray = function(obj) {
-        return Array.isArray ? Array.isArray(obj) : '[object Array]' === Object.prototype.toString.call(obj);
+    var isArrayLike = function(obj) {
+        return obj && ('length' in obj);
     };
 
     /**
@@ -66,7 +67,7 @@
         }
 
         var leadingArgs = Array.prototype.slice.call(arguments, 2);
-        
+
         return function() {
             for (var i = leadingArgs.length - 1; i >= 0; --i) {
                 Array.prototype.unshift.call(arguments, leadingArgs[i]);
@@ -87,7 +88,7 @@
     var arrayMap = function(arr, fn, thisArg) {
 
         if (Array.prototype.map) {
-            return Array.prototype.map.apply(arr, Array.prototype.slice.call(arguments, 1))
+            return Array.prototype.map.apply(arr, Array.prototype.slice.call(arguments, 1));
         }
 
         var ret = [];
@@ -103,6 +104,33 @@
      */
     var asap = 'undefined' === typeof setImmediate ? setTimeout : setImmediate;
 
+    /**
+     * Assert a function type.
+     *
+     * @param  {Mixin} value
+     * @param  {Boolean} strict
+     * @throws {TypeError} If value is not a function
+     */
+    var assertFunction = function(value, strict) {
+        if (!isFunction(value)) {
+            /*jshint eqnull: true */
+            if (value != null || strict) {
+                throw new TypeError(value + ' is not a function');
+            }
+            /*jshint eqnull: false */
+        }
+    };
+    /**
+     * Assert an array type.
+     *
+     * @param  {Mixin} value
+     * @throws {TypeError} If value is like an array
+     */
+    var assertArrayLike = function(value) {
+        if (!isArrayLike(value)) {
+            throw new TypeError(value + ' is not like array');
+        }
+    };
 
     /**
      * Promise constructor.
@@ -116,9 +144,7 @@
         var fns = [];
         var value;
 
-        if (!isFunction(func)) {
-            throw new TypeError('Promise resolver ' + func + ' is not a function');
-        }
+        assertFunction(func, true);
 
         /**
          * Trigger events
@@ -177,6 +203,8 @@
          */
         this.then = function(onFulfilled, onRejected) {
             var self = this;
+            assertFunction(onFulfilled);
+            assertFunction(onRejected);
             return new P(function(resolve) {
                 fns.push({
                     onFulfilled: isFunction(onFulfilled) ? onFulfilled : noop,
@@ -196,6 +224,7 @@
          */
         this.catch = function(onRejected) {
             var self = this;
+            assertFunction(onRejected);
             return new P(function(resolve) {
                 fns.push({
                     onFulfilled: noop,
@@ -252,6 +281,7 @@
      * @since 0.1.0
      */
     P.race = function(sequence) {
+        assertArrayLike(sequence);
         var qs = arrayMap(sequence, P.resolve, P);
         return new P(function(resolve, reject) {
             if (!qs.length) {
@@ -270,6 +300,7 @@
      * @since 0.1.0
      */
     P.all = function(sequence) {
+        assertArrayLike(sequence);
         var qs = arrayMap(sequence, P.resolve, P);
         return new P(function(resolve, reject) {
             var resolveCnt = 0,

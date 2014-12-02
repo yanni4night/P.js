@@ -106,10 +106,22 @@ exports.P = {
         }).state, 'state should be "pending" immediately');
     },
     type_exception: function(test) {
-        test.expect(1);
+        test.expect(5);
         test.throws(function() {
-            new Promise(45);
+            new P(1);
         }, 'should throw error if resolver is not a function');
+        test.throws(function() {
+            P.all(null);
+        }, 'should throw error if sequence is not array-like');
+        test.throws(function() {
+            P.race(null);
+        }, 'should throw error if sequence is not array-like');
+        test.throws(function() {
+            P.resolve(2).then({});
+        }, 'should throw error if resolver is not a function');
+        test.throws(function() {
+            P.resolve(2).then(null, {});
+        }, 'should throw error if rejector is not a function');
         test.done();
     }
 };
