@@ -7,3 +7,4 @@ bower_components
 ._*
 *.pyc
 npm-debug.log
+build
