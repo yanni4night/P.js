@@ -6,13 +6,13 @@ module.exports = (grunt)=>
         jshint:
             options:
                 jshintrc: '.jshintrc'
-            all: ['p.js', 'test/*_test.js']
-        nodeunit:
-            test: ['test/*_test.js']
+            all: ['p.js', 'test/*.test.js']
+        mochaTest:
+            src: ['test/*.test.js']
         coveralls:
             all:
                 src: 'coverage/lcov.info'
 
-    grunt.registerTask 'test', ['nodeunit']
+    grunt.registerTask 'test', ['mochaTest']
     grunt.registerTask 'default', ['jshint', 'test']
     
