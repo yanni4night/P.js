@@ -5,15 +5,16 @@
  * changelog
  * 2014-11-30[16:05:07]:revised
  * 2014-12-01[10:57:13]:better invoke
+ * 2014-12-02[10:17:14]:add P.reject
  *
  * @author yanni4night@gmail.com
- * @version 0.1.1
+ * @version 0.1.2
  * @since 0.1.0
  */
 
 (function(global, factory) {
     'use strict';
-    if ('undefined' !== typeof global.define && define.amd) {
+    if ('undefined' !== typeof define && define.amd) {
         define(factory);
     } else if ('undefined' !== typeof module && module.exports) {
         module.exports = factory();
@@ -46,24 +47,28 @@
         this.state = STATE_PENDING;
         var fns = [];
         var value;
+
+        if (!isFunction(func)) {
+            throw new TypeError('Promise resolver ' + func + ' is not a function');
+        }
+
         /**
          * Trigger events
          * @since 0.1.0
          */
         var trigger = function() {
-            var ret, fn;
+            var fn;
+
+            if (STATE_PENDING === this.state) {
+                return;
+            }
 
             while ((fn = fns.shift())) {
+                //resolve&reject always exists
                 if (STATE_FULFILLED === this.state) {
-                    ret = (fn.onFulfilled) ? fn.onFulfilled.call(null, value) : undefined;
-                    if (fn.resolve) {
-                        fn.resolve(ret);
-                    }
+                    fn.resolve(fn.onFulfilled.call(null, value));
                 } else if (STATE_REJECTED === this.state) {
-                    ret = fn.onRejected ? fn.onRejected.call(null, value) : undefined;
-                    if (fn.reject) {
-                        fn.reject(ret);
-                    }
+                    fn.reject(fn.onRejected.call(null, value));
                 }
             }
 
@@ -146,14 +151,29 @@
      * @return {Promise}
      * @since 0.1.0
      */
-    P.resolve = function(obj) {
-        if (obj instanceof P) {
-            return obj;
+    P.resolve = function(value) {
+        if (value instanceof P) {
+            //Return a new promise follow the value if it's thenable
+            return new P(function(resolve, reject) {
+                value.then(resolve, reject);
+            });
         } else {
             return new P(function(resolve) {
-                resolve(obj);
+                resolve(value);
             });
         }
+    };
+
+    /**
+     * @param  {Mixin} reason
+     * @return {Promise}
+     * @since 0.2.0
+     */
+    P.reject = function(reason) {
+        //Treat as a reason even reason is thenable
+        return new P(function(resolve, reject) {
+            reject(reason);
+        });
     };
 
     /**

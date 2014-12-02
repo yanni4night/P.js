@@ -14,6 +14,7 @@ Simple _Promise/A+_ implementation for ES5.
  - [then](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)
  - [catch](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
  - [P.resolve](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve)
+ - [P.reject](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject)
  - [P.all](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
  - [P.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race)
 
@@ -29,12 +30,12 @@ Simple _Promise/A+_ implementation for ES5.
 [npm-image]: http://img.shields.io/npm/v/p.js.svg
 [travis-url]: https://travis-ci.org/yanni4night/P.js
 [travis-image]: http://img.shields.io/travis/yanni4night/P.js.svg
-[appveyor-image]:https://ci.appveyor.com/api/projects/status/bsu9w9ar8pboc2nj?svg=true
+[appveyor-image]:https://ci.appveyor.com/api/projects/status/h9lbs41h7rmykqxn?svg=true
 [appveyor-url]:https://ci.appveyor.com/project/yanni4night/P.js
-[david-dm-url]:https://david-dm.org/yanni4night/P.js
-[david-dm-image]:https://david-dm.org/yanni4night/P.js.svg
-[david-dm-dev-url]:https://david-dm.org/yanni4night/P.js#info=devDependencies
-[david-dm-dev-image]:https://david-dm.org/yanni4night/P.js/dev-status.svg
+[david-dm-url]:https://david-dm.org/yanni4night/p.js
+[david-dm-image]:https://david-dm.org/yanni4night/p.js.svg
+[david-dm-dev-url]:https://david-dm.org/yanni4night/p.js#info=devDependencies
+[david-dm-dev-image]:https://david-dm.org/yanni4night/p.js/dev-status.svg
 [coveralls-url]:https://coveralls.io/r/yanni4night/P.js
 [coveralls-image]:https://coveralls.io/repos/yanni4night/P.js/badge.png
 [grunt-url]:http://gruntjs.com/

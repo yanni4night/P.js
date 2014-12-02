@@ -42,6 +42,14 @@ exports.P = {
             test.done();
         });
     },
+    basic_reject: function(test) {
+        var msg = 'expected error';
+        test.expect(1);
+        P.reject(new Error(msg)).then(function() {}, function(err) {
+            test.deepEqual(msg, err && err.message, 'data from catch should be "' + msg + '"');
+            test.done();
+        });
+    },
     basic_all: function(test) {
         test.expect(2);
         var sp = new P(function(resolve) {
@@ -70,7 +78,7 @@ exports.P = {
         test.expect(2);
         new P(function(resolve) {
             setTimeout(resolve.bind(null, 34), 500);
-        }).then(function(data) {
+        }).then().then(function(data) {
             test.deepEqual(data, 34, 'data from then should be 34');
             return 67;
         }).then(function(data) {
@@ -96,5 +104,12 @@ exports.P = {
             test.deepEqual(67, data, 'data from then should be 67');
             test.done();
         }).state, 'state should be "pending" immediately');
+    },
+    type_exception: function(test) {
+        test.expect(1);
+        test.throws(function() {
+            new Promise(45);
+        }, 'should throw error if resolver is not a function');
+        test.done();
     }
 };

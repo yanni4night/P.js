@@ -1,6 +1,6 @@
 {
   "name": "p.js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple Promise/A+ implementation for ES5",
   "main": "p.js",
   "scripts": {
